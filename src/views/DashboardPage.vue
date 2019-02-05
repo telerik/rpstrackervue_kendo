@@ -45,6 +45,32 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>All issues</h3>
+
+            <kendo-chart
+              title="All Issues"
+              :category-axis-categories="categories"
+              :category-axis-major-grid-lines-visible="false"
+              :category-axis-labels-rotation="'auto'"
+              category-axis-base-unit="months"
+              series-defaults-type="column"
+              :series-defaults-stack="true"
+              :series-defaults-gap="0.06"
+              legend-position="bottom"
+              theme="sass"
+            >
+              <kendo-chart-series-item
+                name="Open"
+                :data="itemsOpenByMonth"
+                color="#CC3458"
+                :opacity="0.7"
+              ></kendo-chart-series-item>
+              <kendo-chart-series-item
+                name="Closed"
+                :data="itemsClosedByMonth"
+                color="#35C473"
+                :opacity="0.7"
+              ></kendo-chart-series-item>
+            </kendo-chart>
           </div>
         </div>
       </div>
@@ -91,6 +117,10 @@ export default class DashboardPage extends Vue {
         closedItemsCount: 0,
         openItemsCount: 0,
     };
+    public categories: Date[] = [];
+    public itemsOpenByMonth: number[] = [];
+    public itemsClosedByMonth: number[] = [];
+
     private store: Store = new Store();
     private dashboardRepo: DashboardRepository = new DashboardRepository();
     private dashboardService: DashboardService = new DashboardService(
@@ -115,9 +145,29 @@ export default class DashboardPage extends Vue {
     }
 
     private refresh() {
-        this.dashboardService.getStatusCounts(this.filter).then(result => {
-            this.statusCounts = result;
+        Promise.all<StatusCounts, FilteredIssues>([
+            this.dashboardService.getStatusCounts(this.filter),
+            this.dashboardService.getFilteredIssues(this.filter),
+        ]).then(results => {
+            this.statusCounts = results[0];
+            this.updateStats(results[1]);
         });
+    }
+
+    private updateStats(issuesAll: FilteredIssues) {
+        const cats = issuesAll.categories.map(c => new Date(c));
+
+        const itemsOpenByMonth: number[] = [];
+        const itemsClosedByMonth: number[] = [];
+
+        issuesAll.items.forEach((item, index) => {
+            itemsOpenByMonth.push(item.open.length);
+            itemsClosedByMonth.push(item.closed.length);
+        });
+
+        this.categories = cats;
+        this.itemsOpenByMonth = itemsOpenByMonth;
+        this.itemsClosedByMonth = itemsClosedByMonth;
     }
 
     private userFilterOpen() {

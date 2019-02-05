@@ -26,7 +26,9 @@ import { ButtonsInstaller } from '@progress/kendo-buttons-vue-wrapper';
 import { DropdownsInstaller } from '@progress/kendo-dropdowns-vue-wrapper';
 import { InputsInstaller } from '@progress/kendo-inputs-vue-wrapper';
 import { LayoutInstaller } from '@progress/kendo-layout-vue-wrapper';
+import { ChartInstaller } from '@progress/kendo-charts-vue-wrapper';
 
+Vue.use(ChartInstaller);
 Vue.use(LayoutInstaller);
 Vue.use(InputsInstaller);
 Vue.use(ButtonsInstaller);

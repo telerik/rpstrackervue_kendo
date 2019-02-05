@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@progress/kendo-buttons-vue-wrapper": "^2019.1.124",
+    "@progress/kendo-charts-vue-wrapper": "^2019.1.124",
     "@progress/kendo-dropdowns-vue-wrapper": "^2019.1.124",
     "@progress/kendo-inputs-vue-wrapper": "^2019.1.124",
     "@progress/kendo-layout-vue-wrapper": "^2019.1.124",

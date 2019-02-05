@@ -14,9 +14,14 @@
     </div>
 
     <Grid
-      :data-items="items"
+      :data-items="gridData"
       :cell-render="'cellTemplate'"
       :columns="columns"
+      :pageable="true"
+      :skip="skip"
+      :take="take"
+      :total="total"
+      @pagechange="onPageChange"
       style="height: 400px"
     >
       <template slot="cellTemplate" slot-scope="{props}">
@@ -130,6 +135,18 @@ export default class BacklogPage extends Vue {
         { field: 'estimate', title: 'Estimate', width: 100 },
         { field: 'dateCreated', title: 'Created', width: 160 },
     ];
+    private skip = 0;
+    private take = 10;
+
+    private get total() {
+        return this.items ? this.items.length : 0;
+    }
+
+    private get gridData() {
+        return this.items
+            ? this.items.slice(this.skip, this.take + this.skip)
+            : [];
+    }
 
     constructor() {
         super();
@@ -189,6 +206,11 @@ export default class BacklogPage extends Vue {
 
     private toggleModal() {
         this.showAddModal = !this.showAddModal;
+    }
+
+    public onPageChange(event: any) {
+        this.skip = event.page.skip;
+        this.take = event.page.take;
     }
 
     private initModalNewItem(): PtNewItem {

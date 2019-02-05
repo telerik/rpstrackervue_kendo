@@ -98,7 +98,7 @@ export default class DashboardPage extends Vue {
     );
     private userService: PtUserService = new PtUserService(this.store);
     private users: PtUser[] = [];
-    public users$: Observable<PtUser[]> = this.store.select<PtUser[]>('users');
+    private users$: Observable<PtUser[]> = this.store.select<PtUser[]>('users');
     private userFilterItemTemplate = `
       <div class="row" style="margin-left: 5px;">
                 <img class="li-avatar rounded mx-auto d-block" src=#=avatar# />
@@ -120,11 +120,11 @@ export default class DashboardPage extends Vue {
         });
     }
 
-    public userFilterOpen() {
+    private userFilterOpen() {
         this.userService.fetchUsers();
     }
 
-    public userFilterValueChange(e: any) {
+    private userFilterValueChange(e: any) {
         if (this.selectedUserIdStr) {
             this.filter.userId = Number(this.selectedUserIdStr);
         } else {

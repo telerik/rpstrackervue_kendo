@@ -3,51 +3,38 @@
     <div
       class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
     >
-      <h1 class="h2">{{ item.title }}</h1>
-      <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group mr-2">
-          <button
-            type="button"
-            @click="onScreenSelected('details')"
-            class="btn btn-sm btn-outline-secondary"
-          >Details</button>
-          
-          <button
-            type="button"
-            @click="onScreenSelected('tasks')"
-            class="btn btn-sm btn-outline-secondary"
-          >Tasks</button>
-          
-          <button
-            type="button"
-            @click="onScreenSelected('chitchat')"
-            class="btn btn-sm btn-outline-secondary"
-          >Chitchat</button>
-        </div>
-      </div>
+      <h1 class="h2">
+        <span class="k-icon k-i-edit"></span>
+        {{ item.title }}
+      </h1>
     </div>
 
-    <PtItemDetails
-      v-if="selectedDetailsScreen === 'details'"
-      :item="item"
-      :usersObs="users$"
-      @usersRequested="onUsersRequested"
-      @itemSaved="onItemSaved"
-    />
+    <kendo-tabstrip @select="onTabSelect">
+      <ul>
+        <li :class="selectedDetailsScreen === 'details' ? 'k-state-active' : ''">Details</li>
+        <li :class="selectedDetailsScreen === 'tasks' ? 'k-state-active' : ''">Tasks</li>
+        <li :class="selectedDetailsScreen === 'chitchat' ? 'k-state-active' : ''">Chitchat</li>
+      </ul>
 
-    <PtItemTasks
-      v-else-if="selectedDetailsScreen === 'tasks'"
-      :tasks="item.tasks"
-      @addNewTask="onAddNewTask"
-      @updateTask="onUpdateTask"
-    />
-
-    <PtItemChitchat
-      v-else-if="selectedDetailsScreen === 'chitchat'"
-      :comments="item.comments"
-      :currentUser="currentUser"
-      @addNewComment="onAddNewComment"
-    />
+      <div>
+        <PtItemDetails
+          :item="item"
+          :usersObs="users$"
+          @usersRequested="onUsersRequested"
+          @itemSaved="onItemSaved"
+        />
+      </div>
+      <div>
+        <PtItemTasks :tasks="item.tasks" @addNewTask="onAddNewTask" @updateTask="onUpdateTask"/>
+      </div>
+      <div>
+        <PtItemChitchat
+          :comments="item.comments"
+          :currentUser="currentUser"
+          @addNewComment="onAddNewComment"
+        />
+      </div>
+    </kendo-tabstrip>
   </div>
 </template>
 
@@ -113,6 +100,11 @@ export default class DetailPage extends Vue {
 
     public onScreenSelected(screen: DetailScreenType) {
         this.selectedDetailsScreen = screen;
+        this.$router.push(`/detail/${this.itemId}/${screen}`);
+    }
+
+    public onTabSelect(e: any) {
+        const screen = e.item.textContent.toLowerCase() as DetailScreenType;
         this.$router.push(`/detail/${this.itemId}/${screen}`);
     }
 

@@ -25,7 +25,9 @@ import '@progress/kendo-theme-default/dist/all.css';
 import { ButtonsInstaller } from '@progress/kendo-buttons-vue-wrapper';
 import { DropdownsInstaller } from '@progress/kendo-dropdowns-vue-wrapper';
 import { InputsInstaller } from '@progress/kendo-inputs-vue-wrapper';
+import { LayoutInstaller } from '@progress/kendo-layout-vue-wrapper';
 
+Vue.use(LayoutInstaller);
 Vue.use(InputsInstaller);
 Vue.use(ButtonsInstaller);
 Vue.use(DropdownsInstaller);

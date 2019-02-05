@@ -241,7 +241,7 @@ export default class PtItemDetails extends Vue {
         return updatedItem;
     }
 
-    public itemTypeTemplate(itemType: PtItemType) {
+    private itemTypeTemplate(itemType: PtItemType) {
         return `
         <div>
           <img src=${ItemType.imageResFromType(
@@ -252,7 +252,7 @@ export default class PtItemDetails extends Vue {
         `;
     }
 
-    public itemPriorityTemplate(itemPriority: PriorityEnum) {
+    private itemPriorityTemplate(itemPriority: PriorityEnum) {
         return `
             <span class="${'badge ' +
                 getIndicatorClass(itemPriority)}">${itemPriority}</span>

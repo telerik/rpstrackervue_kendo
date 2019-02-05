@@ -22,6 +22,9 @@
       :take="take"
       :total="total"
       @pagechange="onPageChange"
+      :sortable="true"
+      :sort="sort"
+      @sortchange="onSortChange"
       style="height: 400px"
     >
       <template slot="cellTemplate" slot-scope="{props}">
@@ -104,6 +107,7 @@ import { PtNewItem } from '@/shared/models/dto/pt-new-item';
 import PresetFilter from '@/components/PresetFilter.vue';
 import { getIndicatorClass } from '@/shared/helpers/priority-styling';
 import { GridColumnProps } from '@progress/kendo-vue-grid';
+import { orderBy, SortDescriptor } from '@progress/kendo-data-query';
 
 @Component({
     components: {
@@ -137,6 +141,7 @@ export default class BacklogPage extends Vue {
     ];
     private skip = 0;
     private take = 10;
+    private sort: SortDescriptor[] = [{ field: 'title', dir: 'asc' }];
 
     private get total() {
         return this.items ? this.items.length : 0;
@@ -144,7 +149,10 @@ export default class BacklogPage extends Vue {
 
     private get gridData() {
         return this.items
-            ? this.items.slice(this.skip, this.take + this.skip)
+            ? orderBy(
+                  this.items.slice(this.skip, this.take + this.skip),
+                  this.sort
+              )
             : [];
     }
 
@@ -211,6 +219,10 @@ export default class BacklogPage extends Vue {
     public onPageChange(event: any) {
         this.skip = event.page.skip;
         this.take = event.page.take;
+    }
+
+    public onSortChange(event: any) {
+        this.sort = event.sort;
     }
 
     private initModalNewItem(): PtNewItem {

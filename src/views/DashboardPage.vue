@@ -14,6 +14,18 @@
 
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group mr-2">
+          <kendo-combobox
+            :data-source="users"
+            v-model="selectedUserIdStr"
+            :placeholder="'Select assignee...'"
+            @open="userFilterOpen"
+            :data-text-field="'fullName'"
+            :data-value-field="'id'"
+            :template="userFilterItemTemplate"
+            @change="userFilterValueChange"
+            style="width: 250px;"
+          ></kendo-combobox>
+
           <kendo-buttongroup>
             <button data-icon="calendar" class="k-flat" @click="(e) => onMonthRangeTap(3)">3 Months</button>
             
@@ -42,7 +54,10 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { Observable } from 'rxjs';
 
+import { PtItem, PtUser } from '@/core/models/domain';
+import { Store } from '@/core/state/app-store';
 import {
     DashboardRepository,
     DashboardFilter,
@@ -56,6 +71,7 @@ import {
 } from '@/shared/models/ui/stats';
 import { formatDateEnUs } from '@/core/helpers/date-utils';
 import ActiveIssues from '@/components/dashboard/ActiveIssues.vue';
+import { PtUserService } from '@/core/services/pt-user-service';
 
 interface DateRange {
     dateStart: Date;
@@ -75,12 +91,26 @@ export default class DashboardPage extends Vue {
         closedItemsCount: 0,
         openItemsCount: 0,
     };
+    private store: Store = new Store();
     private dashboardRepo: DashboardRepository = new DashboardRepository();
     private dashboardService: DashboardService = new DashboardService(
         this.dashboardRepo
     );
+    private userService: PtUserService = new PtUserService(this.store);
+    private users: PtUser[] = [];
+    public users$: Observable<PtUser[]> = this.store.select<PtUser[]>('users');
+    private userFilterItemTemplate = `
+      <div class="row" style="margin-left: 5px;">
+                <img class="li-avatar rounded mx-auto d-block" src=#=avatar# />
+                <span style="margin-left: 5px;">#= fullName #</span>
+            </div>
+    `;
+    private selectedUserIdStr: string = '';
 
     public created() {
+        this.users$.subscribe(users => {
+            this.users = users;
+        });
         this.refresh();
     }
 
@@ -88,6 +118,19 @@ export default class DashboardPage extends Vue {
         this.dashboardService.getStatusCounts(this.filter).then(result => {
             this.statusCounts = result;
         });
+    }
+
+    public userFilterOpen() {
+        this.userService.fetchUsers();
+    }
+
+    public userFilterValueChange(e: any) {
+        if (this.selectedUserIdStr) {
+            this.filter.userId = Number(this.selectedUserIdStr);
+        } else {
+            this.filter.userId = undefined;
+        }
+        this.refresh();
     }
 
     private onMonthRangeTap(months: number) {

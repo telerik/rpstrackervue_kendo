@@ -23,15 +23,10 @@ import '@progress/kendo-ui';
 import '@progress/kendo-theme-default/dist/all.css';
 
 import { ButtonsInstaller } from '@progress/kendo-buttons-vue-wrapper';
-Vue.use(ButtonsInstaller);
+import { DropdownsInstaller } from '@progress/kendo-dropdowns-vue-wrapper';
 
-/*
-Component.registerHooks([
-  "beforeRouteEnter",
-  "beforeRouteLeave",
-  "beforeRouteUpdate"
-]);
-*/
+Vue.use(ButtonsInstaller);
+Vue.use(DropdownsInstaller);
 
 @Component({
     components: {

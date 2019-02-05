@@ -54,18 +54,15 @@
 
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Estimate</label>
+
         <div class="col-sm-10">
-          <input
-            class="form-control"
-            type="range"
-            step="1"
-            min="0"
-            max="20"
+          <kendo-slider
             v-model="itemForm.estimate"
-            @blur="onBlurTextField"
-            style="width: 300px"
+            :min="0"
+            :max="20"
+            @change="(e)=>onSliderChange(e)"
             name="estimate"
-          >
+          ></kendo-slider>
         </div>
       </div>
 
@@ -194,6 +191,11 @@ export default class PtItemDetails extends Vue {
     }
 
     public onBlurTextField() {
+        this.notifyUpdateItem();
+    }
+
+    public onSliderChange(e: any) {
+        this.itemForm!.estimate = e.value;
         this.notifyUpdateItem();
     }
 

@@ -72,14 +72,24 @@
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Title</label>
                   <div class="col-sm-10">
-                    <input class="form-control" v-model="newItem.title" name="title">
+                    <input
+                      class="k-textbox"
+                      v-model="newItem.title"
+                      name="title"
+                      style="width: 100%;"
+                    >
                   </div>
                 </div>
 
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Description</label>
                   <div class="col-sm-10">
-                    <textarea class="form-control" v-model="newItem.description" name="description"></textarea>
+                    <textarea
+                      class="k-textarea"
+                      v-model="newItem.description"
+                      name="description"
+                      style="width: 100%;"
+                    ></textarea>
                   </div>
                 </div>
 

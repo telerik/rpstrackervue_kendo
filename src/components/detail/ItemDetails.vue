@@ -4,7 +4,13 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Title</label>
         <div class="col-sm-10">
-          <input class="form-control" v-model="itemForm.title" @blur="onBlurTextField" name="title">
+          <input
+            class="k-textbox"
+            v-model="itemForm.title"
+            @blur="onBlurTextField"
+            name="title"
+            style="width: 100%;"
+          >
         </div>
       </div>
 
@@ -12,10 +18,11 @@
         <label class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
           <textarea
-            class="form-control"
+            class="k-textarea"
             v-model="itemForm.description"
             @blur="onBlurTextField"
             name="description"
+            style="width: 100%;"
           ></textarea>
         </div>
       </div>
@@ -23,28 +30,25 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Item Type</label>
         <div class="col-sm-10">
-          <select
-            class="form-control"
+          <kendo-dropdownlist
             v-model="itemForm.typeStr"
-            @change="onNonTextFieldChange"
+            :data-source="itemTypesProvider"
+            @close="onNonTextFieldChange"
+            :template="(i)=>itemTypeTemplate(i)"
             name="itemType"
-          >
-            <option v-for="t in itemTypesProvider" :value="t" :key="t">{{ t }}</option>
-          </select>
+          ></kendo-dropdownlist>
         </div>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Status</label>
         <div class="col-sm-10">
-          <select
-            class="form-control"
+          <kendo-dropdownlist
             v-model="itemForm.statusStr"
-            @change="onNonTextFieldChange"
+            :data-source="statusesProvider"
+            @close="onNonTextFieldChange"
             name="itemStatus"
-          >
-            <option v-for="s in statusesProvider" :value="s" :key="s">{{ s }}</option>
-          </select>
+          ></kendo-dropdownlist>
         </div>
       </div>
 
@@ -68,14 +72,13 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Priority</label>
         <div class="col-sm-10">
-          <select
-            class="form-control"
+          <kendo-dropdownlist
             v-model="itemForm.priorityStr"
-            @change="onNonTextFieldChange"
+            :data-source="prioritiesProvider"
+            @close="onNonTextFieldChange"
+            :template="(p)=>itemPriorityTemplate(p)"
             name="itemPrority"
-          >
-            <option v-for="p in prioritiesProvider" :value="p" :key="p">{{ p }}</option>
-          </select>
+          ></kendo-dropdownlist>
         </div>
       </div>
 
@@ -146,6 +149,8 @@ import {
 } from '@/shared/models/forms/pt-item-details-edit-form';
 import { EMPTY_STRING } from '@/core/helpers';
 import { PriorityEnum, StatusEnum } from '@/core/models/domain/enums';
+import { PtItemType } from '@/core/models/domain/types';
+import { getIndicatorClass } from '@/shared/helpers/priority-styling';
 
 @Component
 export default class PtItemDetails extends Vue {
@@ -232,6 +237,24 @@ export default class PtItemDetails extends Vue {
         });
 
         return updatedItem;
+    }
+
+    public itemTypeTemplate(itemType: PtItemType) {
+        return `
+        <div>
+          <img src=${ItemType.imageResFromType(
+              itemType
+          )} class="backlog-icon" />
+                <span>${itemType}</span>
+            </div>
+        `;
+    }
+
+    public itemPriorityTemplate(itemPriority: PriorityEnum) {
+        return `
+            <span class="${'badge ' +
+                getIndicatorClass(itemPriority)}">${itemPriority}</span>
+        `;
     }
 }
 </script>

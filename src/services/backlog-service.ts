@@ -119,7 +119,16 @@ export class BacklogService {
 
 
     public updatePtItem(item: PtItem): Promise<PtItem> {
-        return this.repo.updatePtItem(item);
+        return new Promise<PtItem>((resolve, reject) => {
+            this.repo.updatePtItem(item)
+                .then((updatedItem: PtItem) => {
+
+                    datesForPtItem(updatedItem);
+                    updatedItem.tasks.forEach((t) => datesForTask(t));
+                    updatedItem.comments.forEach((c) => datesForComment(c));
+                    resolve(updatedItem);
+                });
+        });
     }
 
     /*

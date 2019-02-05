@@ -13,48 +13,16 @@
       </div>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-striped table-sm table-hover">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Assignee</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Priority</th>
-            <th>Estimate</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-bind:key="i.id" v-for="i in items" class="pt-table-row" @click="listItemTap(i)">
-            <td>
-              <img :src="getIndicatorImage(i)" class="backlog-icon">
-            </td>
-            <td>
-              <img :src="i.assignee.avatar" class="li-avatar rounded mx-auto d-block">
-            </td>
-            <td>
-              <span class="li-title">{{i.title}}</span>
-            </td>
-
-            <td>
-              <span>{{i.status}}</span>
-            </td>
-
-            <td>
-              <span :class="'badge ' + getPriorityClass(i)">{{i.priority}}</span>
-            </td>
-            <td>
-              <span class="li-estimate">{{i.estimate}}</span>
-            </td>
-            <td>
-              <span class="li-date">{{i.dateCreated.toDateString()}}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <Grid
+      :data-items="items"
+      :cell-render="'cellTemplate'"
+      :columns="columns"
+      style="height: 400px"
+    >
+      <template slot="cellTemplate" slot-scope="{props}">
+        <td :class="props.className" v-html="getNestedValue(props)"></td>
+      </template>
+    </Grid>
 
     <transition v-if="showAddModal">
       <div class="modal-mask">
@@ -125,11 +93,12 @@ import { EMPTY_STRING } from '@/core/helpers';
 import { Store } from '@/core/state/app-store';
 
 import { PresetType } from '@/core/models/domain/types';
-import { PtItem } from '@/core/models/domain';
+import { PtItem, PtUser } from '@/core/models/domain';
 import { ItemType } from '@/core/constants';
 import { PtNewItem } from '@/shared/models/dto/pt-new-item';
 import PresetFilter from '@/components/PresetFilter.vue';
 import { getIndicatorClass } from '@/shared/helpers/priority-styling';
+import { GridColumnProps } from '@progress/kendo-vue-grid';
 
 @Component({
     components: {
@@ -148,6 +117,19 @@ export default class BacklogPage extends Vue {
         this.backlogRepo,
         this.store
     );
+
+    private columns: GridColumnProps[] = [
+        { field: 'type', title: ' ', width: 40 },
+        {
+            field: 'assignee',
+            title: 'Assignee',
+            width: 260,
+        },
+        { field: 'title', title: 'Title' },
+        { field: 'priority', title: 'Priority', width: 100 },
+        { field: 'estimate', title: 'Estimate', width: 100 },
+        { field: 'dateCreated', title: 'Created', width: 160 },
+    ];
 
     constructor() {
         super();
@@ -215,6 +197,54 @@ export default class BacklogPage extends Vue {
             description: EMPTY_STRING,
             typeStr: 'PBI',
         };
+    }
+
+    private getNestedValue(props: any) {
+        const fieldName = props.field;
+        const dataItem = props.dataItem as PtItem;
+        switch (fieldName) {
+            case 'type':
+                return this.getItemTypeCellMarkup(dataItem);
+            case 'assignee':
+                return this.getAssigneeCellMarkup(dataItem.assignee);
+            case 'priority':
+                return this.getPriorityCellMarkup(dataItem);
+            case 'dateCreated':
+                return this.getCreatedDateCellMarkup(dataItem);
+            default:
+                return (dataItem as any)[fieldName];
+        }
+    }
+
+    /*
+    private cellRendererAssignee(h: any, tdElement: any, props: any) {
+        return h('td', [props.dataItem.assignee.fullName]);
+    }
+    */
+
+    private getItemTypeCellMarkup(item: PtItem) {
+        return `<img src="${this.getIndicatorImage(
+            item
+        )}" class="backlog-icon" />`;
+    }
+
+    private getAssigneeCellMarkup(user: PtUser) {
+        return `
+        <div>
+          <img src="${user.avatar}" class="li-avatar rounded mx-auto" />
+          <span style="margin-left: 10px;">${user.fullName}</span>
+        </div>
+      `;
+    }
+
+    private getPriorityCellMarkup(item: PtItem) {
+        return `<span class="${'badge ' + this.getPriorityClass(item)}">${
+            item.priority
+        }</span>`;
+    }
+
+    private getCreatedDateCellMarkup(item: PtItem) {
+        return `<span class="li-date">${item.dateCreated.toDateString()}</span>`;
     }
 }
 </script>

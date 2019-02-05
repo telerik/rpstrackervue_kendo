@@ -27,6 +27,9 @@ import { DropdownsInstaller } from '@progress/kendo-dropdowns-vue-wrapper';
 import { InputsInstaller } from '@progress/kendo-inputs-vue-wrapper';
 import { LayoutInstaller } from '@progress/kendo-layout-vue-wrapper';
 import { ChartInstaller } from '@progress/kendo-charts-vue-wrapper';
+import { Grid } from '@progress/kendo-vue-grid';
+
+Vue.component('Grid', Grid);
 
 Vue.use(ChartInstaller);
 Vue.use(LayoutInstaller);

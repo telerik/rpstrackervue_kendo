@@ -20,7 +20,7 @@ import SideMenu from '@/components/SideMenu.vue';
 import MainMenu from '@/components/MainMenu.vue';
 
 import '@progress/kendo-ui';
-import '@progress/kendo-theme-default/dist/all.css';
+import '@progress/kendo-theme-bootstrap/dist/all.css';
 
 import { ButtonsInstaller } from '@progress/kendo-buttons-vue-wrapper';
 import { DropdownsInstaller } from '@progress/kendo-dropdowns-vue-wrapper';

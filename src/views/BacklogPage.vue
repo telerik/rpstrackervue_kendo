@@ -216,12 +216,12 @@ export default class BacklogPage extends Vue {
         this.showAddModal = !this.showAddModal;
     }
 
-    public onPageChange(event: any) {
+    private onPageChange(event: any) {
         this.skip = event.page.skip;
         this.take = event.page.take;
     }
 
-    public onSortChange(event: any) {
+    private onSortChange(event: any) {
         this.sort = event.sort;
     }
 

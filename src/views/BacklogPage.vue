@@ -17,6 +17,7 @@
       :data-items="gridData"
       :cell-render="'cellTemplate'"
       :columns="columns"
+      @rowclick="onSelectionChange"
       :pageable="true"
       :skip="skip"
       :take="take"
@@ -178,6 +179,11 @@ export default class BacklogPage extends Vue {
     public listItemTap(item: PtItem) {
         // navigate to detail page
         this.$router.push(`/detail/${item.id}`);
+    }
+
+    public onSelectionChange(event: any) {
+        const selItem = event.dataItem as PtItem;
+        this.$router.push(`/detail/${selItem.id}`);
     }
 
     public getIndicatorImage(item: PtItem) {

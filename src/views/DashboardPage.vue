@@ -52,6 +52,7 @@
               :category-axis-major-grid-lines-visible="false"
               :category-axis-labels-rotation="'auto'"
               category-axis-base-unit="months"
+              :series="series"
               series-defaults-type="column"
               :series-defaults-stack="true"
               :series-defaults-gap="0.06"
@@ -60,13 +61,11 @@
             >
               <kendo-chart-series-item
                 name="Open"
-                :data="itemsOpenByMonth"
                 color="#CC3458"
                 :opacity="0.7"
               ></kendo-chart-series-item>
               <kendo-chart-series-item
                 name="Closed"
-                :data="itemsClosedByMonth"
                 color="#35C473"
                 :opacity="0.7"
               ></kendo-chart-series-item>
@@ -118,8 +117,22 @@ export default class DashboardPage extends Vue {
         openItemsCount: 0,
     };
     public categories: Date[] = [];
-    public itemsOpenByMonth: number[] = [];
-    public itemsClosedByMonth: number[] = [];
+    public series = [
+      {
+        name: 'Open',
+        data: [],
+        color: '#CC3458',
+        opacity: 0.7
+      },
+      {
+        name: 'Closed',
+        data: [],
+        color: '#35C473',
+        opacity: 0.7
+      },
+    ];
+    // public itemsOpenByMonth: number[] = [];
+    // public itemsClosedByMonth: number[] = [];
 
     private store: Store = new Store();
     private dashboardRepo: DashboardRepository = new DashboardRepository();
@@ -166,8 +179,10 @@ export default class DashboardPage extends Vue {
         });
 
         this.categories = cats;
-        this.itemsOpenByMonth = itemsOpenByMonth;
-        this.itemsClosedByMonth = itemsClosedByMonth;
+        // this.itemsOpenByMonth = itemsOpenByMonth;
+        // this.itemsClosedByMonth = itemsClosedByMonth;
+        this.series[0].data = itemsOpenByMonth as any;
+        this.series[1].data = itemsClosedByMonth as any;
     }
 
     private userFilterOpen() {

@@ -4,13 +4,7 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Title</label>
         <div class="col-sm-10">
-          <input
-            class="k-textbox"
-            v-model="itemForm.title"
-            @blur="onBlurTextField"
-            name="title"
-            style="width: 100%;"
-          >
+          <input class="form-control" v-model="itemForm.title" @blur="onBlurTextField" name="title">
         </div>
       </div>
 
@@ -18,11 +12,10 @@
         <label class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
           <textarea
-            class="k-textarea"
+            class="form-control"
             v-model="itemForm.description"
             @blur="onBlurTextField"
             name="description"
-            style="width: 100%;"
           ></textarea>
         </div>
       </div>
@@ -30,23 +23,32 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Item Type</label>
         <div class="col-sm-10">
-          <kendo-dropdownlist
+           <kendo-dropdownlist
             v-model="itemForm.typeStr"
-            :data-source="itemTypesProvider"
-            @close="onNonTextFieldChange"
-            :template="(i)=>itemTypeTemplate(i)"
+            :data-items="itemTypesProvider"
+            @change="onNonTextFieldChange"
+            :item-render="'myTemplate'"
             name="itemType"
-          ></kendo-dropdownlist>
+          >
+            <template v-slot:myTemplate="{props}">
+              <div @click="(ev) => props.onClick(ev)">
+                <img src="itemSrc(props.dataItem)" class="backlog-icon" />
+                <span>
+                  {{ props.dataItem }}
+                </span>
+              </div>
+            </template>
+          </kendo-dropdownlist>
         </div>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Status</label>
         <div class="col-sm-10">
-          <kendo-dropdownlist
+           <kendo-dropdownlist
             v-model="itemForm.statusStr"
-            :data-source="statusesProvider"
-            @close="onNonTextFieldChange"
+            :data-items="statusesProvider"
+            @change="onNonTextFieldChange"
             name="itemStatus"
           ></kendo-dropdownlist>
         </div>
@@ -54,13 +56,12 @@
 
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Estimate</label>
-
         <div class="col-sm-10">
           <kendo-slider
-            v-model="itemForm.estimate"
+            :value="itemForm.estimate"
             :min="0"
             :max="20"
-            @change="(e)=>onSliderChange(e)"
+            @change="onSliderChange"
             name="estimate"
           ></kendo-slider>
         </div>
@@ -69,13 +70,20 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Priority</label>
         <div class="col-sm-10">
-          <kendo-dropdownlist
+           <kendo-dropdownlist
             v-model="itemForm.priorityStr"
-            :data-source="prioritiesProvider"
-            @close="onNonTextFieldChange"
+            :data-items="prioritiesProvider"
+            @change="onNonTextFieldChange"
+             :item-render="'myTemplate'"
             :template="(p)=>itemPriorityTemplate(p)"
             name="itemPrority"
-          ></kendo-dropdownlist>
+          >
+            <template v-slot:myTemplate="{props}">
+              <div @click="(ev) => props.onClick(ev)">
+                <span :class="indicatorClass(props.dataItem)">{{ props.dataItem }}</span>
+               </div>
+            </template>
+          </kendo-dropdownlist>
         </div>
       </div>
 
@@ -83,15 +91,28 @@
         <label class="col-sm-2 col-form-label">Assignee</label>
 
         <div class="col-sm-10">
-          <img :src="this.selectedAssignee.avatar" class="li-avatar rounded">
+          <img :src="selectedAssignee.avatar" class="li-avatar rounded">
           <span>{{itemForm.assigneeName}}</span>
-          
           <button
             type="button"
             class="btn btn-sm btn-outline-secondary"
             @click="assigneePickerOpen"
           >Pick assignee</button>
         </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Change Avatar</label>
+          <upload
+            :restrictions="{
+                allowedExtensions: [ '.jpg', '.png' ]
+            }"
+            :default-files="[]"
+            :with-credentials="false"
+            :save-url="'https://demos.telerik.com/kendo-ui/service-v4/upload/save'"
+            :remove-url="'https://demos.telerik.com/kendo-ui/service-v4/upload/remove'"       
+          :multiple="false"
+          @statuschange="UploadStatusChange"
+        />
       </div>
     </form>
 
@@ -131,132 +152,174 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
-import { Observable } from 'rxjs';
+import { defineComponent, PropType, ref, toRefs } from "vue";
+import { Observable } from "rxjs";
 
-import { PtItem, PtUser } from '@/core/models/domain';
+import { PtItem, PtUser } from "@/core/models/domain";
 import {
-    ItemType,
-    PT_ITEM_STATUSES,
-    PT_ITEM_PRIORITIES,
-} from '@/core/constants';
+  ItemType,
+  PT_ITEM_STATUSES,
+  PT_ITEM_PRIORITIES,
+} from "@/core/constants";
 import {
-    PtItemDetailsEditFormModel,
-    ptItemToFormModel,
-} from '@/shared/models/forms/pt-item-details-edit-form';
-import { EMPTY_STRING } from '@/core/helpers';
-import { PriorityEnum, StatusEnum } from '@/core/models/domain/enums';
-import { PtItemType } from '@/core/models/domain/types';
+  PtItemDetailsEditFormModel,
+  ptItemToFormModel,
+} from "@/shared/models/forms/pt-item-details-edit-form";
+import { DropDownListVue3 as DropDownList, DropDownListChangeEvent } from '@progress/kendo-vue-dropdowns';
+import { SliderVue3 as Slider, SliderChangeEvent } from '@progress/kendo-vue-inputs';
+import { Upload, UploadOnStatusChangeEvent } from '@progress/kendo-vue-upload';
+import { PtItemType } from "@/core/models/domain/types";
+import { PriorityEnum } from "@/core/models/domain/enums";
 import { getIndicatorClass } from '@/shared/helpers/priority-styling';
 
-@Component
-export default class PtItemDetails extends Vue {
-    @Prop() public item!: PtItem;
-    @Prop() public usersObs!: Observable<PtUser[]>;
+export default defineComponent({
+  name: "PtItemChitchat",
+  components: {
+    'kendo-dropdownlist': DropDownList,
+    "kendo-slider": Slider,
+    'upload': Upload,
+  },
+  props: {
+    item: {
+      type: Object as PropType<PtItem>,
+      default: () => ({
+        description: "",
+      }),
+    },
+    usersObs: {
+      type: Object as PropType<Observable<PtUser[]>>,
+      required: true
+    }
+  },
+  setup(props, context) {
+    const itemTypesProvider = ref(ItemType.List.map((t) => t.PtItemType));
+    const statusesProvider = ref(PT_ITEM_STATUSES);
+    const prioritiesProvider = ref(PT_ITEM_PRIORITIES);
 
-    public itemTypesProvider = ItemType.List.map(t => t.PtItemType);
-    public statusesProvider = PT_ITEM_STATUSES;
-    public prioritiesProvider = PT_ITEM_PRIORITIES;
+    const showAddModal = ref(false);
+    const users = ref<PtUser[]>([]);
+    const itemForm = ref<PtItemDetailsEditFormModel | undefined>();
+    const selectedAssignee = ref<PtUser | undefined>();
+    let { item } = toRefs(props);
 
-    public showAddModal: boolean = false;
-    public users: PtUser[] = [];
-    public itemForm: PtItemDetailsEditFormModel | undefined;
-    public selectedAssignee: PtUser | undefined;
+    if (props.item) {
+      itemForm.value = ptItemToFormModel(props.item);
+      selectedAssignee.value = item.value.assignee as PtUser;
+    }
 
-    @Emit('usersRequested')
-    public usersRequested() {}
-    @Emit('itemSaved')
-    public itemSaved(item: PtItem): void {}
-
-    public created() {
-        if (this.item) {
-            this.itemForm = ptItemToFormModel(this.item);
-            this.selectedAssignee = this.item.assignee;
+    const assigneePickerOpen = () => {
+      props.usersObs.subscribe((newUsers: PtUser[]) => {
+        if (newUsers.length > 0) {
+          users.value = newUsers;
+          showAddModal.value = true;
         }
-    }
+      });
 
-    public assigneePickerOpen() {
-        this.usersObs.subscribe((users: PtUser[]) => {
-            if (users.length > 0) {
-                this.users = users;
-                this.showAddModal = true;
-            }
-        });
+      context.emit("usersRequested");
+    };
 
-        this.usersRequested();
-    }
+    const onNonTextFieldChange = () => {
+      notifyUpdateItem();
+    };
 
-    public onNonTextFieldChange() {
-        this.notifyUpdateItem();
-    }
+    const onBlurTextField = () => {
+      notifyUpdateItem();
+    };
 
-    public onBlurTextField() {
-        this.notifyUpdateItem();
-    }
+    const toggleModal = () => {
+      showAddModal.value = !showAddModal.value;
+      return false;
+    };
 
-    public onSliderChange(e: any) {
-        this.itemForm!.estimate = e.value;
-        this.notifyUpdateItem();
-    }
+    const assigneePickerClose = (user: PtUser) => {
+      selectedAssignee.value = user;
+      itemForm.value!.assigneeName = user.fullName;
+      notifyUpdateItem();
+      showAddModal.value = false;
+    };
 
-    private toggleModal() {
-        this.showAddModal = !this.showAddModal;
-        return false;
-    }
+    const notifyUpdateItem = () => {
+      if (!itemForm.value) {
+        return;
+      }
+      const updatedItem = getUpdatedItem(
+        props.item!,
+        itemForm.value,
+        selectedAssignee.value!
+      );
+      context.emit('itemSaved', updatedItem);
+    };
 
-    private assigneePickerClose(user: PtUser) {
-        this.selectedAssignee = user;
-        this.itemForm!.assigneeName = user.fullName;
-        this.notifyUpdateItem();
-        this.showAddModal = false;
-    }
+    const getUpdatedItem = (
+      item: PtItem,
+      itemForm: PtItemDetailsEditFormModel,
+      assignee: PtUser
+    ): PtItem => {
+      const updatedItem = Object.assign({}, item, {
+        title: itemForm.title,
+        description: itemForm.description,
+        type: itemForm.typeStr,
+        status: itemForm.statusStr,
+        priority: itemForm.priorityStr,
+        estimate: itemForm.estimate,
+        assignee,
+      });
 
-    private notifyUpdateItem() {
-        if (!this.itemForm) {
-            return;
-        }
-        const updatedItem = this.getUpdatedItem(
-            this.item!,
-            this.itemForm,
-            this.selectedAssignee!
-        );
-        this.itemSaved(updatedItem);
-    }
+      return updatedItem;
+    };
 
-    private getUpdatedItem(
-        item: PtItem,
-        itemForm: PtItemDetailsEditFormModel,
-        assignee: PtUser
-    ): PtItem {
-        const updatedItem = Object.assign({}, item, {
-            title: itemForm.title,
-            description: itemForm.description,
-            type: itemForm.typeStr,
-            status: itemForm.statusStr,
-            priority: itemForm.priorityStr,
-            estimate: itemForm.estimate,
-            assignee,
-        });
+    const itemSrc = (dataItem: PtItemType) => {
+      return ItemType.imageResFromType(dataItem);
+    };
 
-        return updatedItem;
-    }
+    const indicatorClass = (itemPriority: PriorityEnum) => {
+      return 'badge ' + getIndicatorClass(itemPriority);
+    };
 
-    private itemTypeTemplate(itemType: PtItemType) {
-        return `
-        <div>
-          <img src=${ItemType.imageResFromType(
-              itemType
-          )} class="backlog-icon" />
-                <span>${itemType}</span>
-            </div>
-        `;
-    }
+    const onSliderChange = (e: SliderChangeEvent) => {
+      itemForm.value!.estimate = Math.round(e.value);
+      notifyUpdateItem();
+    };
 
-    private itemPriorityTemplate(itemPriority: PriorityEnum) {
-        return `
-            <span class="${'badge ' +
-                getIndicatorClass(itemPriority)}">${itemPriority}</span>
-        `;
-    }
-}
+     const reader = new FileReader();
+
+    const imageLoaded = () => {
+      if (selectedAssignee.value && reader.result) {
+        selectedAssignee.value.avatar = reader.result.toString();
+      }
+    };
+
+    const UploadStatusChange = (e: UploadOnStatusChangeEvent) => {
+      if (!e.newState[0] || !e.newState[0].getRawFile) {
+        return;
+      }
+      const status = e.newState[0].status;
+      const file = e.newState[0].getRawFile();
+
+      if (file && status === 4) {
+        reader.onloadend = imageLoaded;
+        reader.readAsDataURL(file);
+      }
+    };
+
+    return {
+      assigneePickerClose,
+      toggleModal,
+      onBlurTextField,
+      assigneePickerOpen,
+      onNonTextFieldChange,
+      itemTypesProvider,
+      statusesProvider,
+      prioritiesProvider,
+      showAddModal,
+      users,
+      selectedAssignee,
+      itemForm,
+      itemSrc,
+      onSliderChange,
+      indicatorClass,
+      UploadStatusChange,
+    };
+  },
+});
 </script>

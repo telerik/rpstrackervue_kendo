@@ -1,4 +1,14 @@
-# rpstrackervue
+# kendo-videos
+
+Kendo components used: 
+Grid
+Chart
+DropDownList
+Combobox
+Slider
+Form
+Window
+Upload
 
 ## Project setup
 ```
@@ -10,14 +20,11 @@ npm install
 npm run serve
 ```
 
+### Api repository - https://github.com/alexziskind1/rpsapi
+
 ### Compiles and minifies for production
 ```
 npm run build
-```
-
-### Run your tests
-```
-npm run test
 ```
 
 ### Lints and fixes files

@@ -15,35 +15,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import SideMenu from '@/components/SideMenu.vue';
 import MainMenu from '@/components/MainMenu.vue';
 
-import '@progress/kendo-ui';
-import '@progress/kendo-theme-bootstrap/dist/all.css';
+import { defineComponent } from "vue";
 
-import { ButtonsInstaller } from '@progress/kendo-buttons-vue-wrapper';
-import { DropdownsInstaller } from '@progress/kendo-dropdowns-vue-wrapper';
-import { InputsInstaller } from '@progress/kendo-inputs-vue-wrapper';
-import { LayoutInstaller } from '@progress/kendo-layout-vue-wrapper';
-import { ChartInstaller } from '@progress/kendo-charts-vue-wrapper';
-import { Grid } from '@progress/kendo-vue-grid';
-
-Vue.component('Grid', Grid);
-
-Vue.use(ChartInstaller);
-Vue.use(LayoutInstaller);
-Vue.use(InputsInstaller);
-Vue.use(ButtonsInstaller);
-Vue.use(DropdownsInstaller);
-
-@Component({
-    components: {
-        MainMenu,
-        SideMenu,
-    },
-})
-export default class App extends Vue {}
+export default defineComponent({
+  name: "App",
+  components: {
+    MainMenu,
+    SideMenu,
+  },
+});
 </script>
 
 <style>
@@ -273,4 +256,5 @@ export default class App extends Vue {}
 .backlog-icon {
     height: 20px;
 }
+
 </style>

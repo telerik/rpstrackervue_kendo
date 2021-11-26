@@ -27,12 +27,12 @@
             v-model="itemForm.typeStr"
             :data-items="itemTypesProvider"
             @change="onNonTextFieldChange"
-            :item-render="'myTemplate'"
+            :item-render="'itemTypeTemplate'"
             name="itemType"
           >
-            <template v-slot:myTemplate="{props}">
+            <template v-slot:itemTypeTemplate="{props}">
               <div @click="(ev) => props.onClick(ev)">
-                <img src="itemSrc(props.dataItem)" class="backlog-icon" />
+                <img :src="itemTypeIconSrc(props.dataItem)" class="backlog-icon" />
                 <span>
                   {{ props.dataItem }}
                 </span>
@@ -74,11 +74,11 @@
             v-model="itemForm.priorityStr"
             :data-items="prioritiesProvider"
             @change="onNonTextFieldChange"
-             :item-render="'myTemplate'"
+             :item-render="'itemPriorityTemplate'"
             :template="(p)=>itemPriorityTemplate(p)"
             name="itemPrority"
           >
-            <template v-slot:myTemplate="{props}">
+            <template v-slot:itemPriorityTemplate="{props}">
               <div @click="(ev) => props.onClick(ev)">
                 <span :class="indicatorClass(props.dataItem)">{{ props.dataItem }}</span>
                </div>
@@ -268,7 +268,7 @@ export default defineComponent({
       return updatedItem;
     };
 
-    const itemSrc = (dataItem: PtItemType) => {
+    const itemTypeIconSrc = (dataItem: PtItemType) => {
       return ItemType.imageResFromType(dataItem);
     };
 
@@ -315,7 +315,7 @@ export default defineComponent({
       users,
       selectedAssignee,
       itemForm,
-      itemSrc,
+      itemTypeIconSrc,
       onSliderChange,
       indicatorClass,
       UploadStatusChange,

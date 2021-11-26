@@ -19,11 +19,11 @@
             :value="selectedUserIdStr"
             :placeholder="'Select assignee...'"
             @open="userFilterOpen"
-            :item-render="'myTemplate'"
+            :item-render="'userFilterItemTemplate'"
             @change="userFilterValueChange"
             :style="{width: '250px'}"
           >
-            <template v-slot:myTemplate="{props}">
+            <template v-slot:userFilterItemTemplate="{props}">
               <div class="row k-item" style="margin-left: 5px;" @click="(ev) => props.onClick(ev)">
                 <img class="li-avatar rounded mx-auto d-block" :src="props.dataItem.avatar" />
                 <span style="margin-left: 5px;">{{ props.dataItem.fullName }}</span>

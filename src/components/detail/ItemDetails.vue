@@ -4,7 +4,8 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Title</label>
         <div class="col-sm-10">
-          <input class="form-control" v-model="itemForm.title" @blur="onBlurTextField" name="title">
+          <kendo-input style="width:100%" v-model="itemForm.title" @blur="onBlurTextField" name="title"/>
+
         </div>
       </div>
 
@@ -12,10 +13,11 @@
         <label class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
           <textarea
-            class="form-control"
+            class="k-textbox"
             v-model="itemForm.description"
             @blur="onBlurTextField"
             name="description"
+            style="width:100%; height:60px;"
           ></textarea>
         </div>
       </div>
@@ -166,7 +168,7 @@ import {
   ptItemToFormModel,
 } from "@/shared/models/forms/pt-item-details-edit-form";
 import { DropDownListVue3 as DropDownList, DropDownListChangeEvent } from '@progress/kendo-vue-dropdowns';
-import { SliderVue3 as Slider, SliderChangeEvent } from '@progress/kendo-vue-inputs';
+import { Input, SliderVue3 as Slider, SliderChangeEvent } from '@progress/kendo-vue-inputs';
 import { Upload, UploadOnStatusChangeEvent } from '@progress/kendo-vue-upload';
 import { PtItemType } from "@/core/models/domain/types";
 import { PriorityEnum } from "@/core/models/domain/enums";
@@ -175,6 +177,7 @@ import { getIndicatorClass } from '@/shared/helpers/priority-styling';
 export default defineComponent({
   name: "PtItemChitchat",
   components: {
+    'kendo-input': Input,
     'kendo-dropdownlist': DropDownList,
     "kendo-slider": Slider,
     'upload': Upload,

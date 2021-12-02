@@ -16,7 +16,7 @@
         <div class="btn-group mr-2">
           <kendo-combobox
             :data-items="users"
-            :value="selectedUserIdStr"
+            :value="comboValue"
             :placeholder="'Select assignee...'"
             @open="userFilterOpen"
             :item-render="'myTemplate'"
@@ -114,7 +114,7 @@ interface DateRange {
   dateEnd: Date;
 }
 
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, computed } from "vue";
 
 export default defineComponent({
   name: "DashboardPage",
@@ -168,13 +168,13 @@ export default defineComponent({
 
     const userService: PtUserService = new PtUserService(store);
     const users = ref<PtUser[]>([]);
-    const users$: Observable<PtUser[]> = store.select<PtUser[]>('users');
+    const users$: Observable<PtUser[]> = store.select<PtUser[]>("users");
     const selectedUserIdStr = ref("");
     const refresh = () => {
       Promise.all<StatusCounts, FilteredIssues>([
         dashboardService.getStatusCounts(filter.value as any),
         dashboardService.getFilteredIssues(filter.value as any),
-      ]).then(results => {
+      ]).then((results) => {
         statusCounts.value = results[0];
         updateStats(results[1]);
       });
@@ -235,6 +235,13 @@ export default defineComponent({
       };
     };
 
+    const comboValue = computed(() => {
+      const selectedUser = users.value.find(
+        (i) => selectedUserIdStr.value.toString() === i.id.toString()
+      );
+      return selectedUser ? selectedUser.fullName : "";
+    });
+
     return {
       formatDateEnUs,
       onMonthRangeTap,
@@ -249,6 +256,7 @@ export default defineComponent({
       users,
       userFilterOpen,
       selectedUserIdStr,
+      comboValue,
     };
   },
 });

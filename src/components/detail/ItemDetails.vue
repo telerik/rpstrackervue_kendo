@@ -4,7 +4,8 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Title</label>
         <div class="col-sm-10">
-          <input class="form-control" v-model="itemForm.title" @blur="onBlurTextField" name="title">
+          <kendo-input style="width:100%" v-model="itemForm.title" @blur="onBlurTextField" name="title"/>
+
         </div>
       </div>
 
@@ -12,10 +13,11 @@
         <label class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
           <textarea
-            class="form-control"
+            class="k-textbox"
             v-model="itemForm.description"
             @blur="onBlurTextField"
             name="description"
+            style="width:100%; height:60px;"
           ></textarea>
         </div>
       </div>
@@ -27,12 +29,12 @@
             v-model="itemForm.typeStr"
             :data-items="itemTypesProvider"
             @change="onNonTextFieldChange"
-            :item-render="'myTemplate'"
+            :item-render="'itemTypeTemplate'"
             name="itemType"
           >
-            <template v-slot:myTemplate="{props}">
+            <template v-slot:itemTypeTemplate="{props}">
               <div @click="(ev) => props.onClick(ev)">
-                <img src="itemSrc(props.dataItem)" class="backlog-icon" />
+                <img :src="itemTypeIconSrc(props.dataItem)" class="backlog-icon" />
                 <span>
                   {{ props.dataItem }}
                 </span>
@@ -74,11 +76,11 @@
             v-model="itemForm.priorityStr"
             :data-items="prioritiesProvider"
             @change="onNonTextFieldChange"
-             :item-render="'myTemplate'"
+             :item-render="'itemPriorityTemplate'"
             :template="(p)=>itemPriorityTemplate(p)"
             name="itemPrority"
           >
-            <template v-slot:myTemplate="{props}">
+            <template v-slot:itemPriorityTemplate="{props}">
               <div @click="(ev) => props.onClick(ev)">
                 <span :class="indicatorClass(props.dataItem)">{{ props.dataItem }}</span>
                </div>
@@ -166,7 +168,7 @@ import {
   ptItemToFormModel,
 } from "@/shared/models/forms/pt-item-details-edit-form";
 import { DropDownListVue3 as DropDownList, DropDownListChangeEvent } from '@progress/kendo-vue-dropdowns';
-import { SliderVue3 as Slider, SliderChangeEvent } from '@progress/kendo-vue-inputs';
+import { Input, SliderVue3 as Slider, SliderChangeEvent } from '@progress/kendo-vue-inputs';
 import { Upload, UploadOnStatusChangeEvent } from '@progress/kendo-vue-upload';
 import { PtItemType } from "@/core/models/domain/types";
 import { PriorityEnum } from "@/core/models/domain/enums";
@@ -175,6 +177,7 @@ import { getIndicatorClass } from '@/shared/helpers/priority-styling';
 export default defineComponent({
   name: "PtItemChitchat",
   components: {
+    'kendo-input': Input,
     'kendo-dropdownlist': DropDownList,
     "kendo-slider": Slider,
     'upload': Upload,
@@ -268,7 +271,7 @@ export default defineComponent({
       return updatedItem;
     };
 
-    const itemSrc = (dataItem: PtItemType) => {
+    const itemTypeIconSrc = (dataItem: PtItemType) => {
       return ItemType.imageResFromType(dataItem);
     };
 
@@ -315,7 +318,7 @@ export default defineComponent({
       users,
       selectedAssignee,
       itemForm,
-      itemSrc,
+      itemTypeIconSrc,
       onSliderChange,
       indicatorClass,
       UploadStatusChange,

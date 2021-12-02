@@ -32,9 +32,9 @@
           </kendo-combobox>
 
           <kendo-buttongroup>
-            <kendo-button :togglable="true" :look="'flat'" :icon="'calendar'"  @click="onMonthRangeTap(3)"> 3 Months </kendo-button>
-            <kendo-button :togglable="true" :look="'flat'" :icon="'calendar'"   @click="onMonthRangeTap(6)"> 6 Months </kendo-button>
-            <kendo-button :togglable="true" :look="'flat'"  :icon="'calendar'"   @click="onMonthRangeTap(12)"> 1 Year </kendo-button>
+            <kendo-button :look="'flat'" :icon="'calendar'" @click="onMonthRangeTap(3)">3 Months</kendo-button>
+            <kendo-button :look="'flat'" :icon="'calendar'" @click="onMonthRangeTap(6)">6 Months</kendo-button>
+            <kendo-button :look="'flat'" :icon="'calendar'" @click="onMonthRangeTap(12)">1 Year</kendo-button>
           </kendo-buttongroup>
         </div>
       </div>

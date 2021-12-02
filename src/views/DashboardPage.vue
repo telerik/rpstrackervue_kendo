@@ -114,7 +114,7 @@ interface DateRange {
   dateEnd: Date;
 }
 
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "DashboardPage",
@@ -209,7 +209,7 @@ export default defineComponent({
     const userFilterValueChange = (e: ComboBoxChangeEvent) => {
       selectedUserIdStr.value = e.value ? e.value.id : "";
       comboValue.value = e.value ? e.value.fullName : "";
-      console.log(e)
+
       if (selectedUserIdStr.value) {
         filter.value.userId = Number(selectedUserIdStr.value);
       } else {

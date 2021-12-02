@@ -170,6 +170,7 @@ export default defineComponent({
     const users = ref<PtUser[]>([]);
     const users$: Observable<PtUser[]> = store.select<PtUser[]>("users");
     const selectedUserIdStr = ref("");
+    const comboValue = ref("");
     const refresh = () => {
       Promise.all<StatusCounts, FilteredIssues>([
         dashboardService.getStatusCounts(filter.value as any),
@@ -207,6 +208,8 @@ export default defineComponent({
 
     const userFilterValueChange = (e: ComboBoxChangeEvent) => {
       selectedUserIdStr.value = e.value ? e.value.id : "";
+      comboValue.value = e.value ? e.value.fullName : "";
+      console.log(e)
       if (selectedUserIdStr.value) {
         filter.value.userId = Number(selectedUserIdStr.value);
       } else {
@@ -235,12 +238,6 @@ export default defineComponent({
       };
     };
 
-    const comboValue = computed(() => {
-      const selectedUser = users.value.find(
-        (i) => selectedUserIdStr.value.toString() === i.id.toString()
-      );
-      return selectedUser ? selectedUser.fullName : "";
-    });
 
     return {
       formatDateEnUs,

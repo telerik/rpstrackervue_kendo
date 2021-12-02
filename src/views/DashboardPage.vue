@@ -16,7 +16,7 @@
         <div class="btn-group mr-2">
           <kendo-combobox
             :data-items="users"
-            :value="selectedUserIdStr"
+            :value="comboValue"
             :placeholder="'Select assignee...'"
             @open="userFilterOpen"
             :item-render="'userFilterItemTemplate'"
@@ -168,13 +168,14 @@ export default defineComponent({
 
     const userService: PtUserService = new PtUserService(store);
     const users = ref<PtUser[]>([]);
-    const users$: Observable<PtUser[]> = store.select<PtUser[]>('users');
+    const users$: Observable<PtUser[]> = store.select<PtUser[]>("users");
     const selectedUserIdStr = ref("");
+    const comboValue = ref("");
     const refresh = () => {
       Promise.all<StatusCounts, FilteredIssues>([
         dashboardService.getStatusCounts(filter.value as any),
         dashboardService.getFilteredIssues(filter.value as any),
-      ]).then(results => {
+      ]).then((results) => {
         statusCounts.value = results[0];
         updateStats(results[1]);
       });
@@ -207,6 +208,8 @@ export default defineComponent({
 
     const userFilterValueChange = (e: ComboBoxChangeEvent) => {
       selectedUserIdStr.value = e.value ? e.value.id : "";
+      comboValue.value = e.value ? e.value.fullName : "";
+
       if (selectedUserIdStr.value) {
         filter.value.userId = Number(selectedUserIdStr.value);
       } else {
@@ -235,6 +238,7 @@ export default defineComponent({
       };
     };
 
+
     return {
       formatDateEnUs,
       onMonthRangeTap,
@@ -249,6 +253,7 @@ export default defineComponent({
       users,
       userFilterOpen,
       selectedUserIdStr,
+      comboValue,
     };
   },
 });

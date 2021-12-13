@@ -25,7 +25,7 @@
         <label class="col-sm-2 col-form-label">Item Type</label>
         <div class="col-sm-10">
            <kendo-dropdownlist
-             v-model="itemForm.typeStr"
+            v-model="itemForm.typeStr"
             :data-items="itemTypesProvider"
             @change="onNonTextFieldChange"
             :item-render="'itemTypeTemplate'"
@@ -47,7 +47,7 @@
         <label class="col-sm-2 col-form-label">Status</label>
         <div class="col-sm-10">
            <kendo-dropdownlist
-            :value="itemForm.statusStr"
+            v-model="itemForm.statusStr"
             :data-items="statusesProvider"
             @change="onNonTextFieldChange"
             name="itemStatus"

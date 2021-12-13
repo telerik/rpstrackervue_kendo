@@ -21,12 +21,11 @@
           ></textarea>
         </div>
       </div>
-
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Item Type</label>
         <div class="col-sm-10">
            <kendo-dropdownlist
-            v-model="itemForm.typeStr"
+             v-model="itemForm.typeStr"
             :data-items="itemTypesProvider"
             @change="onNonTextFieldChange"
             :item-render="'itemTypeTemplate'"
@@ -48,7 +47,7 @@
         <label class="col-sm-2 col-form-label">Status</label>
         <div class="col-sm-10">
            <kendo-dropdownlist
-            v-model="itemForm.statusStr"
+            :value="itemForm.statusStr"
             :data-items="statusesProvider"
             @change="onNonTextFieldChange"
             name="itemStatus"
@@ -76,8 +75,7 @@
             v-model="itemForm.priorityStr"
             :data-items="prioritiesProvider"
             @change="onNonTextFieldChange"
-             :item-render="'itemPriorityTemplate'"
-            :template="(p)=>itemPriorityTemplate(p)"
+            :item-render="'itemPriorityTemplate'"
             name="itemPrority"
           >
             <template v-slot:itemPriorityTemplate="{props}">
@@ -154,7 +152,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, toRefs } from "vue";
+import { defineComponent, PropType, ref, toRefs, nextTick } from "vue";
 import { Observable } from "rxjs";
 
 import { PtItem, PtUser } from "@/core/models/domain";
@@ -221,7 +219,8 @@ export default defineComponent({
       context.emit("usersRequested");
     };
 
-    const onNonTextFieldChange = () => {
+    const onNonTextFieldChange = async () => {
+      await nextTick();
       notifyUpdateItem();
     };
 

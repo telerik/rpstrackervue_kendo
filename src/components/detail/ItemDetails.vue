@@ -59,11 +59,13 @@
         <label class="col-sm-2 col-form-label">Estimate</label>
         <div class="col-sm-10">
           <kendo-slider
+            :buttons="true"
             :value="itemForm.estimate"
-            :min="0"
-            :max="20"
             @change="onSliderChange"
             name="estimate"
+            :min="0"
+            :max="20"
+            :step="1"
           ></kendo-slider>
         </div>
       </div>

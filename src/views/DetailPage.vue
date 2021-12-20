@@ -9,7 +9,8 @@
       </h1>
 
     </div>
-    <tabstrip :selected="selected" @select="onSelect" :animation="false">
+    <kendo-tabstrip :selected="selectedDetailsTabIndex" @select="onTabSelect">
+
       <tabstripTab :title="'Details'">
         <PtItemDetails
           :item="item"
@@ -18,10 +19,11 @@
           @itemSaved="onItemSaved"
         />
       </tabstripTab>
+
       <tabstripTab :title="'Tasks'">
           <PtItemTasks :tasks="item.tasks" @addNewTask="onAddNewTask" @updateTask="onUpdateTask"/>
+      </tabstripTab>
 
-    </tabstripTab>
       <tabstripTab :title="'Chitchat'">
           <PtItemChitchat
             :comments="item.comments"
@@ -29,7 +31,7 @@
             @addNewComment="onAddNewComment"
           />
       </tabstripTab>
-    </tabstrip>
+    </kendo-tabstrip>
   </div>
 </template>
 
@@ -62,7 +64,7 @@ import { TabStrip, TabStripTab, TabStripSelectEventArguments } from '@progress/k
 export default defineComponent({
   name: "DetailPage",
   components: {
-    'tabstrip': TabStrip,
+    'kendo-tabstrip': TabStrip,
     'tabstripTab': TabStripTab,
     PtItemDetails,
     PtItemTasks,
@@ -71,7 +73,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const selectedDetailsScreen = ref<DetailScreenType>('details' );
+    
     let store: Store = new Store();
     let backlogRepo: BacklogRepository = new BacklogRepository();
     let backlogService: BacklogService = new BacklogService(backlogRepo, store);
@@ -81,23 +83,34 @@ export default defineComponent({
     let currentUser = ref<PtUser | undefined>(store.value.currentUser);
     let users$ = ref<Observable<PtUser[]>>(store.select<PtUser[]>('users'));
 
+    const allDetailsScreens: DetailScreenType[]  = ['details', 'tasks', 'chitchat'];
+    const selectedDetailsScreen = ref<DetailScreenType>('details'); // default
+    const selectedDetailsTabIndex = ref(0); //default
     selectedDetailsScreen.value = route.params.screen as DetailScreenType;
+    selectedDetailsTabIndex.value = allDetailsScreens.findIndex((v)=>v === route.params.screen);
+
     itemId = Number(route.params.id);
     const refresh = () => {
       backlogService.getPtItem(itemId).then((newItem) => {
         item.value = newItem;
       });
     };
-    const selected = ref(0);
-    const onSelect = (e: TabStripSelectEventArguments) => {
-      selected.value = e.selected;
-    };
     refresh();
 
+    
     const onScreenSelected = (screen: DetailScreenType) => {
       selectedDetailsScreen.value = screen;
       router.push(`/detail/${itemId}/${screen}`);
     };
+
+    const onTabSelect = (e: TabStripSelectEventArguments) => {
+      const tabIndex = e.selected;
+      selectedDetailsTabIndex.value = tabIndex;
+
+      const screenFromIndex = allDetailsScreens[tabIndex];
+      router.push(`/detail/${itemId}/${screenFromIndex}`);
+    };
+
 
     const onItemSaved = (currentItem: PtItem) => {
       backlogService.updatePtItem(currentItem).then((updateItem: PtItem) => {
@@ -189,13 +202,13 @@ export default defineComponent({
       onUpdateTask,
       onAddNewTask,
       onScreenSelected,
+      onTabSelect,
       onItemSaved,
       item,
       currentUser,
       users$,
       selectedDetailsScreen,
-      selected,
-      onSelect
+      selectedDetailsTabIndex,
     };
   },
 });

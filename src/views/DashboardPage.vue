@@ -16,7 +16,7 @@
         <div class="btn-group mr-2">
           <kendo-combobox
             :data-items="users"
-            :value="comboValue"
+            :text-field="'fullName'"
             :placeholder="'Select assignee...'"
             @open="userFilterOpen"
             :item-render="'userFilterItemTemplate'"
@@ -25,9 +25,9 @@
           >
             <template v-slot:userFilterItemTemplate="{props}">
               <div class="row k-item" style="margin-left: 5px;" @click="(ev) => props.onClick(ev)">
-                <img class="li-avatar rounded mx-auto d-block" :src="props.dataItem.avatar" />
+                <img class="li-avatar rounded" :src="props.dataItem.avatar" />
                 <span style="margin-left: 5px;">{{ props.dataItem.fullName }}</span>
-            </div>
+              </div>
             </template>
           </kendo-combobox>
 
@@ -115,6 +115,7 @@ interface DateRange {
 }
 
 import { defineComponent, ref } from "vue";
+import { EMPTY_STRING } from '@/core/helpers';
 
 export default defineComponent({
   name: "DashboardPage",
@@ -169,8 +170,7 @@ export default defineComponent({
     const userService: PtUserService = new PtUserService(store);
     const users = ref<PtUser[]>([]);
     const users$: Observable<PtUser[]> = store.select<PtUser[]>("users");
-    const selectedUserIdStr = ref("");
-    const comboValue = ref("");
+
     const refresh = () => {
       Promise.all<StatusCounts, FilteredIssues>([
         dashboardService.getStatusCounts(filter.value as any),
@@ -207,11 +207,8 @@ export default defineComponent({
     refresh();
 
     const userFilterValueChange = (e: ComboBoxChangeEvent) => {
-      selectedUserIdStr.value = e.value ? e.value.id : "";
-      comboValue.value = e.value ? e.value.fullName : "";
-
-      if (selectedUserIdStr.value) {
-        filter.value.userId = Number(selectedUserIdStr.value);
+      if (e.value) {
+        filter.value.userId = Number(e.value.id);
       } else {
         filter.value.userId = undefined;
       }
@@ -252,8 +249,6 @@ export default defineComponent({
       userFilterValueChange,
       users,
       userFilterOpen,
-      selectedUserIdStr,
-      comboValue,
     };
   },
 });

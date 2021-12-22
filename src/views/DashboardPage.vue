@@ -66,8 +66,16 @@
               <ChartLegend :position="'bottom'" />
               <ChartSeriesDefaults :type="'column'" :stack="true" :gap="0.06" />
               <ChartSeries>
-                <ChartSeriesItem v-bind="series[0]" />
-                <ChartSeriesItem v-bind="series[1]" />
+                <ChartSeriesItem 
+                  :name="'Open'" 
+                  :data-items="itemsOpenByMonth" 
+                  :color="'#CC3458'"
+                  :opacity="0.7" />
+                <ChartSeriesItem 
+                  :name="'Closed'" 
+                  :data-items="itemsClosedByMonth" 
+                  :color="'#35C473'"
+                  :opacity="0.7" />
               </ChartSeries>
             </kendo-chart>
           </div>
@@ -141,25 +149,10 @@ export default defineComponent({
       closedItemsCount: 0,
       openItemsCount: 0,
     });
+
     const categories = ref<Date[]>([]);
     const itemsOpenByMonth = ref<number[]>([]);
     const itemsClosedByMonth = ref<number[]>([]);
-    const series = ref([
-      {
-        name: 'Open',
-        'data-items': [],
-        color: '#CC3458',
-        opacity: 0.7
-      },
-      {
-        name: 'Closed',
-        'data-items': [],
-        color: '#35C473',
-        opacity: 0.7
-      },
-    ]);
-    // public itemsOpenByMonth: number[] = [];
-    // public itemsClosedByMonth: number[] = [];
 
     const store: Store = new Store();
     const dashboardRepo: DashboardRepository = new DashboardRepository();
@@ -171,10 +164,14 @@ export default defineComponent({
     const users = ref<PtUser[]>([]);
     const users$: Observable<PtUser[]> = store.select<PtUser[]>("users");
 
+    users$.subscribe((newUsers: PtUser[]) => {
+      users.value = newUsers;
+    });
+
     const refresh = () => {
       Promise.all<StatusCounts, FilteredIssues>([
-        dashboardService.getStatusCounts(filter.value as any),
-        dashboardService.getFilteredIssues(filter.value as any),
+        dashboardService.getStatusCounts(filter.value as DashboardFilter),
+        dashboardService.getFilteredIssues(filter.value as DashboardFilter),
       ]).then((results) => {
         statusCounts.value = results[0];
         updateStats(results[1]);
@@ -184,26 +181,25 @@ export default defineComponent({
     const updateStats = (issuesAll: FilteredIssues) => {
       const cats = issuesAll.categories.map(c => new Date(c));
 
-      const itemsOpenByMonth: number[] = [];
-      const itemsClosedByMonth: number[] = [];
+      const open: number[] = [];
+      const closed: number[] = [];
 
       issuesAll.items.forEach((item, index) => {
-        itemsOpenByMonth.push(item.open.length);
-        itemsClosedByMonth.push(item.closed.length);
+        open.push(item.open.length);
+        closed.push(item.closed.length);
       });
 
       categories.value = cats;
-      series.value[0]['data-items'] = itemsOpenByMonth as any;
-      series.value[1]['data-items'] = itemsClosedByMonth as any;
+
+      itemsOpenByMonth.value = open;
+      itemsClosedByMonth.value = closed;
     };
 
     const userFilterOpen = () => {
       userService.fetchUsers();
     };
 
-    users$.subscribe((newUsers: PtUser[]) => {
-      users.value = newUsers;
-    });
+
     refresh();
 
     const userFilterValueChange = (e: ComboBoxChangeEvent) => {
@@ -245,7 +241,6 @@ export default defineComponent({
       categories,
       itemsOpenByMonth,
       itemsClosedByMonth,
-      series,
       userFilterValueChange,
       users,
       userFilterOpen,

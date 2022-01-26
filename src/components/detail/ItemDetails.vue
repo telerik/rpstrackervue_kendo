@@ -153,7 +153,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, toRefs, nextTick } from "vue";
+import { defineComponent, PropType, ref, toRefs } from "vue";
 import { Observable } from "rxjs";
 
 import { PtItem, PtUser } from "@/core/models/domain";
@@ -222,7 +222,6 @@ export default defineComponent({
     };
 
     const onNonTextFieldChange = async () => {
-      await nextTick();
       notifyUpdateItem();
     };
 

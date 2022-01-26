@@ -32,9 +32,9 @@
           </kendo-combobox>
 
           <kendo-buttongroup>
-            <kendo-button :look="'flat'" :icon="'calendar'" @click="onMonthRangeTap(3)">3 Months</kendo-button>
-            <kendo-button :look="'flat'" :icon="'calendar'" @click="onMonthRangeTap(6)">6 Months</kendo-button>
-            <kendo-button :look="'flat'" :icon="'calendar'" @click="onMonthRangeTap(12)">1 Year</kendo-button>
+            <kendo-button :fill-mode="'flat'" :icon="'calendar'" @click="onMonthRangeTap(3)">3 Months</kendo-button>
+            <kendo-button :fill-mode="'flat'" :icon="'calendar'" @click="onMonthRangeTap(6)">6 Months</kendo-button>
+            <kendo-button :fill-mode="'flat'" :icon="'calendar'" @click="onMonthRangeTap(12)">1 Year</kendo-button>
           </kendo-buttongroup>
         </div>
       </div>
@@ -63,7 +63,7 @@
                   :axis-base-unit="'months'"
                 />
               </ChartCategoryAxis>
-              <ChartLegend :position="'bottom'" />
+              <ChartLegend :position="'bottom'"  />
               <ChartSeriesDefaults :type="'column'" :stack="true" :gap="0.06" />
               <ChartSeries>
                 <ChartSeriesItem 

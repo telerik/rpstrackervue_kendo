@@ -24,7 +24,7 @@
             :style="{width: '250px'}"
           >
             <template v-slot:userFilterItemTemplate="{props}">
-              <div class="row k-item" style="margin-left: 5px;" @click="(ev) => props.onClick(ev)">
+              <div :class="{ row: true, ...props.itemClass}" style="margin-left: 5px;" @click="(ev) => props.onClick(ev)">
                 <img class="li-avatar rounded" :src="props.dataItem.avatar" />
                 <span style="margin-left: 5px;">{{ props.dataItem.fullName }}</span>
               </div>

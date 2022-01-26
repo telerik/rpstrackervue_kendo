@@ -31,7 +31,7 @@
             name="itemType"
           >
             <template v-slot:itemTypeTemplate="{props}">
-              <div @click="(ev) => props.onClick(ev)">
+              <div @click="(ev) => props.onClick(ev)" :class="props.itemClass">
                 <img :src="itemTypeIconSrc(props.dataItem)" class="backlog-icon" />
                 <span>
                   {{ props.dataItem }}
@@ -80,7 +80,7 @@
             name="itemPrority"
           >
             <template v-slot:itemPriorityTemplate="{props}">
-              <div @click="(ev) => props.onClick(ev)">
+              <div @click="(ev) => props.onClick(ev)" :class="props.itemClass">
                 <span :class="indicatorClass(props.dataItem)">{{ props.dataItem }}</span>
                </div>
             </template>

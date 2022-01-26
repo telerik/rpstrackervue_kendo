@@ -12,7 +12,8 @@
         </div>
       </div>
     </div>
-    <grid
+    <grid 
+       
       :data-items="gridData"
       :columns="columns"
       @rowclick="onSelectionChange"

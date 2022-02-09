@@ -4,7 +4,7 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Title</label>
         <div class="col-sm-10">
-          <kendo-input style="width:100%" v-model="itemForm.title" @blur="onBlurTextField" name="title"/>
+          <kendo-input v-model="itemForm.title" @blur="onBlurTextField" name="title"/>
 
         </div>
       </div>
@@ -12,19 +12,18 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
-          <textarea
-            class="k-textbox"
+          <kendo-textarea
             v-model="itemForm.description"
             @blur="onBlurTextField"
             name="description"
-            style="width:100%; height:60px;"
-          ></textarea>
+            style="height:60px;"
+          ></kendo-textarea>
         </div>
       </div>
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Item Type</label>
         <div class="col-sm-10">
-           <kendo-dropdownlist
+           <kendo-dropdownlist 
             v-model="itemForm.typeStr"
             :data-items="itemTypesProvider"
             @change="onNonTextFieldChange"
@@ -32,7 +31,7 @@
             name="itemType"
           >
             <template v-slot:itemTypeTemplate="{props}">
-              <div @click="(ev) => props.onClick(ev)">
+              <div @click="(ev) => props.onClick(ev)" :class="props.itemClass">
                 <img :src="itemTypeIconSrc(props.dataItem)" class="backlog-icon" />
                 <span>
                   {{ props.dataItem }}
@@ -81,7 +80,7 @@
             name="itemPrority"
           >
             <template v-slot:itemPriorityTemplate="{props}">
-              <div @click="(ev) => props.onClick(ev)">
+              <div @click="(ev) => props.onClick(ev)" :class="props.itemClass">
                 <span :class="indicatorClass(props.dataItem)">{{ props.dataItem }}</span>
                </div>
             </template>
@@ -154,7 +153,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, toRefs, nextTick } from "vue";
+import { defineComponent, PropType, ref, toRefs } from "vue";
 import { Observable } from "rxjs";
 
 import { PtItem, PtUser } from "@/core/models/domain";
@@ -167,8 +166,8 @@ import {
   PtItemDetailsEditFormModel,
   ptItemToFormModel,
 } from "@/shared/models/forms/pt-item-details-edit-form";
-import { DropDownListVue3 as DropDownList, DropDownListChangeEvent } from '@progress/kendo-vue-dropdowns';
-import { Input, SliderVue3 as Slider, SliderChangeEvent } from '@progress/kendo-vue-inputs';
+import { DropDownList, DropDownListChangeEvent } from '@progress/kendo-vue-dropdowns';
+import { Input, Slider, TextArea, SliderChangeEvent } from '@progress/kendo-vue-inputs';
 import { Upload, UploadOnStatusChangeEvent } from '@progress/kendo-vue-upload';
 import { PtItemType } from "@/core/models/domain/types";
 import { PriorityEnum } from "@/core/models/domain/enums";
@@ -177,6 +176,7 @@ import { getIndicatorClass } from '@/shared/helpers/priority-styling';
 export default defineComponent({
   name: "PtItemChitchat",
   components: {
+    'kendo-textarea': TextArea,
     'kendo-input': Input,
     'kendo-dropdownlist': DropDownList,
     "kendo-slider": Slider,
@@ -222,7 +222,6 @@ export default defineComponent({
     };
 
     const onNonTextFieldChange = async () => {
-      await nextTick();
       notifyUpdateItem();
     };
 

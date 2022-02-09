@@ -12,8 +12,8 @@
         </div>
       </div>
     </div>
-    <grid 
-       
+    
+    <kendo-grid
       :data-items="gridData"
       :columns="columns"
       @rowclick="onSelectionChange"
@@ -47,12 +47,13 @@
           </span>
         </td>
       </template>
-       <template v-slot:createdDateCell="{props}">
+       <template v-slot:dateCreatedCell="{props}">
         <td :class="props.className">
           <span class="li-date">{{ props.dataItem.dateCreated.toDateString()}}</span>
         </td>
       </template>
-    </grid>
+    </kendo-grid>
+
     <window
       v-if="showAddModal"
       :title="'Add New Item'"
@@ -99,7 +100,7 @@ export default defineComponent({
   name: "BacklogPage",
   components: {
     PresetFilter,
-    "grid": Grid,
+    "kendo-grid": Grid,
     "window": Window,
     "k-form": Form,
     "formcontent": FormContent,
@@ -117,7 +118,7 @@ export default defineComponent({
     };
 
     const columns = ref<GridColumnProps[]>([
-      { field: "type", title: " ", width: 40, cell: "typeCell" },
+      { field: "type", title: " ", width: 44, cell: "typeCell" },
       {
         field: "assignee",
         title: "Assignee",
@@ -127,7 +128,7 @@ export default defineComponent({
       { field: "title", title: "Title" },
       { field: "priority", title: "Priority", width: 100, cell: "priorityCell" },
       { field: "estimate", title: "Estimate", width: 100 },
-      { field: "dateCreated", title: "Created", width: 160, cell: "createdDateCell" },
+      { field: "dateCreated", title: "Created", width: 160, cell: "dateCreatedCell" },
     ]);
     const skip = ref(0);
     const take = ref(10);

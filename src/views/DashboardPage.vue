@@ -169,7 +169,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      Promise.all<StatusCounts, FilteredIssues>([
+      Promise.all([
         dashboardService.getStatusCounts(filter.value as DashboardFilter),
         dashboardService.getFilteredIssues(filter.value as DashboardFilter),
       ]).then((results) => {

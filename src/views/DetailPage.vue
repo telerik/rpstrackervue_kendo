@@ -4,7 +4,7 @@
       class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
     >
       <h1 class="h2">
-        <span class="k-icon k-i-edit"></span>
+        <SvgIcon :icon="pencilIcon" />
         {{ item.title }}
       </h1>
 
@@ -60,6 +60,8 @@ import { PtNewTask } from '@/shared/models/dto/pt-new-task';
 import { PtTaskUpdate } from '@/shared/models/dto/pt-task-update';
 import { PtNewComment } from '@/shared/models/dto/pt-new-comment';
 import { TabStrip, TabStripTab, TabStripSelectEventArguments } from '@progress/kendo-vue-layout';
+import { pencilIcon } from "@progress/kendo-svg-icons";
+import { SvgIcon } from "@progress/kendo-vue-common";
 
 export default defineComponent({
   name: "DetailPage",
@@ -69,6 +71,7 @@ export default defineComponent({
     PtItemDetails,
     PtItemTasks,
     PtItemChitchat,
+    SvgIcon
   },
   setup() {
     const router = useRouter();
@@ -209,6 +212,7 @@ export default defineComponent({
       users$,
       selectedDetailsScreen,
       selectedDetailsTabIndex,
+      pencilIcon
     };
   },
 });

@@ -20,7 +20,7 @@ npm install
 npm run serve
 ```
 
-### Api repository - https://github.com/alexziskind1/rpsapi
+### Api repository - https://github.com/telerik/rpsapi
 
 ### Compiles and minifies for production
 ```
